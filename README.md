@@ -45,7 +45,7 @@ Jonka jälkeen toteutin configtestin sekä apache2 status komennot:
     
 Kumpikaan ei tuottanut mitään erroreita.
 
-    tail -F /var/log/apache2/access.log
+    sudo tail -F /var/log/apache2/access.log
 
 Tässä huomasin, että sain vastaukseksi: Permission denied.
 Toisin sanoen saatiin väärät oikeudet aikaiseksi. 
@@ -68,8 +68,65 @@ Teen virheen, jonka kohtasin aiemmin tehdessäni tätä conf-tiedostoa vahingoss
 
 ![kuva](https://user-images.githubusercontent.com/105205141/223067247-e5f5ea3c-3b11-4f91-b822-f7cffe8debd1.png)
 
+nyt kun käynnistän configtestin tulostaa testi seuraavan:
 
+![kuva](https://user-images.githubusercontent.com/105205141/223067595-6028457f-7983-4b42-ace7-0f02386e5ef2.png)
 
+Nähdään että virhe löytyy riviltä 13 tiedostossa seikkuco.conf
 
+Tässä vaiheessa olisi jo helppoa käydä katsomassa suoraan conf-tiedostoa ja tarkistaa syntaksi.
+
+Korjasin tiedoston ja uudelleenkäynnistin palvelimen- kaikki toimii taas.
+
+## e) klo 11.22
+
+poistin WSGI-moduulin komennolla:
+
+        sudo apt-get purge libapache2-mod-wsgi-py3
+
+Tämän jälkeen migratesin projektitiedostossa ja uudelleenkäynnistin apache2 palvelimen:
+
+![kuva](https://user-images.githubusercontent.com/105205141/223069629-04fe023c-1cfa-4ec0-b968-5e22952f3121.png)
+
+        sudo systemctl status apache2.service
+        
+![kuva](https://user-images.githubusercontent.com/105205141/223069854-13351dcb-17dc-4b9f-918c-da7ee3316ccb.png)
+
+        /sbin/apache2ctl configtest
+        
+![kuva](https://user-images.githubusercontent.com/105205141/223070489-86070a61-25c6-46ee-aa76-0f8c18933f9b.png)
+
+Configtestissä huomataan, että ohjelma ei osaa lukea .conf -tiedoston WSGIDaemonProcess-komentoa (tuskin muitakaan WSGI-komentoja), voidaan todeta, että komennot ovat syntaksiltaan kirjoitettu oikein, jolloin tullaan siihen tulokseen että ongelma ei ole "misspelled" vaan "defined by a module not included in the server configuration"
+
+Eli ratkaisu on: ladataan wsgi-moduuli takaisin:
+
+        sudo apt-get install libapache2-mod-wsgi-py3
+
+ 
+![kuva](https://user-images.githubusercontent.com/105205141/223071835-a0f102e9-62c0-4a13-a8fc-3a6ec68b905b.png)
+
+ja palvelin taas toimii!
+
+## f) klo 11.35
+
+avasin settings.py tiedoston projektikansiossani:
+
+        micro settings.py
+        
+![kuva](https://user-images.githubusercontent.com/105205141/223072381-21f34bb9-4819-4e34-9918-399a58cc71f6.png)
+
+Yhdistämällä selaimella palvelimelle localhost-osoitteella ei päästy määränpäähän.
+
+![kuva](https://user-images.githubusercontent.com/105205141/223072825-19ab5b23-9e84-44b9-8bde-07f851a3f678.png)
+
+kokeilin testiksi selaimella Non-Functional.web sekä what.exe.me.do
+sivuja ei löytynyt.
+
+configtest ei palauta erroreita.
+
+/var/log/apache2/error.log ei myöskään logannut mitään asiaan liittyvää.
+/var/log/apache2/access.log ei myöskään logannut mitään.
+
+En osaa sanoa, mistä tämä ongelma sitten voisi löytyä jos sitä ei minnekään näistä ole logattu.
 
 
