@@ -129,4 +129,10 @@ configtest ei palauta erroreita.
 
 En osaa sanoa, mistä tämä ongelma sitten voisi löytyä jos sitä ei minnekään näistä ole logattu.
 
+Lopetin tehtävän klo 11.47.
 
+## Lähteet: 
+
+h12 -vinkit osio sivulla: https://terokarvinen.com/2023/linux-palvelimet-2023-alkukevat/
+
+chmod komennot ja oikeudet: https://www.pluralsight.com/blog/it-ops/linux-file-permissions
